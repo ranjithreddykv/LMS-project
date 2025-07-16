@@ -95,7 +95,7 @@ const Navbar = () => {
               <Button variant="outline" onClick={() => navigate("/login")}>
                 Login
               </Button>
-              <Button onClick={() => navigate("/register")}>Sign Up</Button>
+              <Button onClick={() => navigate("/login")}>Sign Up</Button>
             </div>
           )}
           <DarkMode />

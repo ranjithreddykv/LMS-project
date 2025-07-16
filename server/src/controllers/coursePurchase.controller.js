@@ -119,4 +119,4 @@ const stripeWebhook = asyncHandler(async (req, res) => {
   }
 });
 
-export { createCheckoutSession };
+export { createCheckoutSession, stripeWebhook };

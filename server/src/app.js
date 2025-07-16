@@ -49,10 +49,12 @@ import healthCheckRoute from "./routes/healthCheck.routes.js";
 import userRoute from "./routes/user.routes.js";
 import courseRoute from "./routes/course.route.js";
 import lectureRoute from "./routes/lecture.route.js";
+import purchaseRoute from "./routes/coursePurchase.route.js"
 //routes
 app.use("/api/v1/healthCheck", healthCheckRoute);
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/course", courseRoute);
 app.use("/api/v1/lecture", lectureRoute);
+app.use("/api/v1/purchase",purchaseRoute);
 app.use(errorHandler);
 export { app };
