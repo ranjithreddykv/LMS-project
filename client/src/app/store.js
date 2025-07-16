@@ -4,9 +4,10 @@ import rootReducer from "./rootReducer.js";
 import { authApi } from "@/features/api/authApi.js";
 import { courseApi } from "@/features/api/courseApi.js";
 import { lectureApi } from "@/features/api/lectureApi.js";
+import { purchaseApi } from "@/features/api/purchaseApi.js";
 export const appStore=configureStore({
     reducer:rootReducer,
-    middleware:(defaultMiddleware)=>defaultMiddleware().concat(authApi.middleware ,courseApi.middleware,lectureApi.middleware)
+    middleware:(defaultMiddleware)=>defaultMiddleware().concat(authApi.middleware ,courseApi.middleware,lectureApi.middleware,purchaseApi.middleware)
 })
 
 const initializeApp=async()=>{

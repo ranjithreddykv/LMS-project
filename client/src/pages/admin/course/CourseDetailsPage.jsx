@@ -11,13 +11,14 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useParams } from "react-router-dom";
+import BuyCourseButton from "@/components/ui/BuyCourseButton";
 
 const CourseDetailsPage = () => {
   const {courseId}=useParams();
   const {data,isLoading,error} = useGetCourseQuery({courseId});
   const courseDetails=data?.data;
   if(error) return <h1>Error in Fetching course details</h1>
- 
+  const purchasedCourse=false;
   return (
     <div className="mt-10">
       {/* Course Header */}
@@ -106,9 +107,9 @@ const CourseDetailsPage = () => {
             </p>
           </CardContent>
           <CardFooter>
-            <Button className="w-full bg-purple-700 hover:bg-purple-800 text-white">
+           { purchasedCourse?(<Button className="w-full bg-purple-700 hover:bg-purple-800 text-white">
               Buy Course Now
-            </Button>
+            </Button>):<BuyCourseButton courseId={courseId}/>}
           </CardFooter>
         </Card>
       </div>

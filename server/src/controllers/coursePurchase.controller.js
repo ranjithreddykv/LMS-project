@@ -18,17 +18,11 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const createCheckoutSession = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const { courseId } = req.body;
+
   const course = await Course.findById(courseId);
   if (!course) throw new ApiError(404, "Course Not found");
-  //create a new course purchase record;
-  const newPurchase = await CoursePurchase.create({
-    courseId,
-    userId,
-    amount: course.coursePrice,
-    status: "pending",
-  });
-  //create a stripe checkout session
 
+  // Create a Stripe Checkout Session first
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
     line_items: [
@@ -45,11 +39,11 @@ const createCheckoutSession = asyncHandler(async (req, res) => {
       },
     ],
     mode: "payment",
-    success_url: `${process.env.FRONTEND_URL}/course-progress/${courseId}`,
+    success_url: `http://localhost:5173/course-progress/${courseId}`,
     cancel_url: `${process.env.FRONTEND_URL}/course-detail/${courseId}`,
     metadata: {
-      courseId: courseId,
-      userId: userId,
+      courseId: courseId.toString(),
+      userId: userId.toString(),
     },
     shipping_address_collection: {
       allowed_countries: ["IN"],
@@ -59,11 +53,18 @@ const createCheckoutSession = asyncHandler(async (req, res) => {
   if (!session.url) {
     throw new ApiError(400, "Error while creating session");
   }
-  //save the purchase record
-  newPurchase.paymentId = session.id;
-  await newPurchase.save();
+
+  // Now create the purchase record including paymentId
+  const newPurchase = await CoursePurchase.create({
+    courseId,
+    userId,
+    amount: course.coursePrice,
+    status: "pending",
+    paymentId: session.id,
+  });
+
   return res.json(
-    new ApiResponse(200, { url: session.url }, "session created succesfully")
+    new ApiResponse(200, { url: session.url }, "Session created successfully")
   );
 });
 
