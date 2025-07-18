@@ -68,7 +68,7 @@ const createCheckoutSession = asyncHandler(async (req, res) => {
   );
 });
 const stripeWebhook = asyncHandler(async (req, res) => {
-  const sig = req.headers['stripe-signature'];
+  const sig = req.headers["stripe-signature"];
   const secret = process.env.WEBHOOK_ENDPOINT_SECRET;
 
   let event;
@@ -76,21 +76,23 @@ const stripeWebhook = asyncHandler(async (req, res) => {
     // req.body is a Buffer because of express.raw middleware
     event = stripe.webhooks.constructEvent(req.body, sig, secret);
   } catch (err) {
-    console.error("❌ Webhook signature verification failed:", err.message);
+    console.error("Webhook signature verification failed:", err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
-  // ✅ Event received successfully
-  console.log("✅ Webhook event type:", event.type);
+  // Event received successfully
+  console.log(" Webhook event type:", event.type);
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
 
     try {
-      const purchase = await CoursePurchase.findOne({ paymentId: session.id }).populate("courseId");
+      const purchase = await CoursePurchase.findOne({
+        paymentId: session.id,
+      }).populate("courseId");
 
       if (!purchase) {
-        console.error("⚠️ Purchase not found for session ID:", session.id);
+        console.error("Purchase not found for session ID:", session.id);
         return res.status(404).json({ message: "Purchase not found" });
       }
 
@@ -115,12 +117,14 @@ const stripeWebhook = asyncHandler(async (req, res) => {
         { $addToSet: { enrolledCourses: purchase.courseId._id } },
         { new: true }
       );
+      await Course.findByIdAndUpdate(purchase.courseId, {
+        $addToSet: { enrolledStudents: purchase.userId },
+      });
 
-      console.log("✅ Purchase marked as completed and lectures unlocked");
+      console.log("Purchase marked as completed and lectures unlocked");
       return res.status(200).json({ received: true });
-
     } catch (err) {
-      console.error("❌ Error processing event:", err);
+      console.error("Error processing event:", err);
       return res.status(500).send("Internal server error");
     }
   } else {
@@ -129,5 +133,45 @@ const stripeWebhook = asyncHandler(async (req, res) => {
   }
 });
 
+const getCourseDetailWithPurchaseStatus = asyncHandler(async (req, res) => {
+  const { courseId } = req.params;
+  const userId = req.user._id;
+  const course = await Course.findById(courseId)
+    .populate({ path: "creator" })
+    .populate({ path: "lectures" });
+  if (!course) throw new ApiError(404, "Course not found");
+  const purchased = await CoursePurchase.findOne({ userId, courseId });
+  return res.json(
+    new ApiResponse(
+      200,
+      { course, purchased: !!purchased },
+      "Course details fetched successfully"
+    )
+  );
+});
+const getAllPurchasedCourse = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const purchasedCourses = await CoursePurchase.find({
+    status: "completed",
+  }).populate("courseId");
+  if (purchasedCourses.length === 0)
+    return res.status(
+      200,
+      purchasedCourses,
+      "You havent purchased any courses"
+    );
+  return res.json(
+    new ApiResponse(
+      200,
+      purchasedCourses,
+      "purchased courses fetched successfully"
+    )
+  );
+});
 
-export { createCheckoutSession, stripeWebhook };
+export {
+  getCourseDetailWithPurchaseStatus,
+  createCheckoutSession,
+  stripeWebhook,
+  getAllPurchasedCourse,
+};

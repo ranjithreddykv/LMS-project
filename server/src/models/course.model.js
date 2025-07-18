@@ -26,10 +26,7 @@ const courseSchema = new mongoose.Schema(
     courseThumbnail: {
       type: String,
     },
-    enrolledStudents: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
+    enrolledStudents: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     lectures: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -40,7 +37,7 @@ const courseSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-   
+
     isPublished: {
       type: Boolean,
       default: false,

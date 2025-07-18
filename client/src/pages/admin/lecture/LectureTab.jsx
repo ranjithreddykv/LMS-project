@@ -136,7 +136,7 @@ const LectureTab = () => {
             {isLoading ? (
               <Loader2 className="animate-spin w-3 h-3" />
             ) : (
-              <>{purchased ? <>Continue Watching</> : <>Buy Course Now</>}</>
+              <>Update Lecture</>
             )}
           </Button>
         </div>

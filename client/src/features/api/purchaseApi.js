@@ -12,11 +12,23 @@ export const purchaseApi = createApi({
     createCheckoutSession: builder.mutation({
       query: (courseId) => ({
         url: "/checkout/create-checkout-session",
-        method:"POST",
-        body:courseId
+        method: "POST",
+        body: courseId,
+      }),
+    }),
+    getCourseDetailsWithStatus: builder.query({
+      query: (courseId) => ({
+      url: `/course/${courseId}/detail-with-status`,
+        method: "GET",
+      }),
+    }),
+    getAllPurchasedCourses: builder.query({
+      query: () => ({
+        url: "/",
+        method:"GET"
       }),
     }),
   }),
 });
 
-export const {useCreateCheckoutSessionMutation}=purchaseApi;
+export const {useCreateCheckoutSessionMutation,useGetAllPurchasedCoursesQuery,useGetCourseDetailsWithStatusQuery}=purchaseApi;

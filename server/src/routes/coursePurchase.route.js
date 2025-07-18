@@ -2,6 +2,8 @@ import express from "express";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import {
   createCheckoutSession,
+  getAllPurchasedCourse,
+  getCourseDetailWithPurchaseStatus,
   stripeWebhook,
 } from "../controllers/coursePurchase.controller.js";
 const router = express.Router();
@@ -11,9 +13,8 @@ router
   .post(verifyJWT, createCheckoutSession);
 
 
-router.route("/course/:courseId/detail-with-status").get(stripeWebhook); //I have to change this after words
-//get all purchasedCourses
-router.route("/").get(stripeWebhook); //I have to replace with new one purchased courses
+router.route("/course/:courseId/detail-with-status").get(verifyJWT,getCourseDetailWithPurchaseStatus); 
+router.route("/").get(verifyJWT,getAllPurchasedCourse); 
 export default router;
 
 //stripe listen --forward-to http://localhost:8001/api/v1/purchase/webhook
