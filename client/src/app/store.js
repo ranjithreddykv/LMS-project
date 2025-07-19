@@ -5,12 +5,22 @@ import { authApi } from "@/features/api/authApi.js";
 import { courseApi } from "@/features/api/courseApi.js";
 import { lectureApi } from "@/features/api/lectureApi.js";
 import { purchaseApi } from "@/features/api/purchaseApi.js";
-export const appStore=configureStore({
-    reducer:rootReducer,
-    middleware:(defaultMiddleware)=>defaultMiddleware().concat(authApi.middleware ,courseApi.middleware,lectureApi.middleware,purchaseApi.middleware)
-})
+import { courseProgressApi } from "@/features/api/courseProgressApi.js";
+export const appStore = configureStore({
+  reducer: rootReducer,
+  middleware: (defaultMiddleware) =>
+    defaultMiddleware().concat(
+      authApi.middleware,
+      courseApi.middleware,
+      lectureApi.middleware,
+      purchaseApi.middleware,
+      courseProgressApi.middleware
+    ),
+});
 
-const initializeApp=async()=>{
-    await appStore.dispatch(authApi.endpoints.loadUser.initiate({},{forceRefetch:true}));
-}
+const initializeApp = async () => {
+  await appStore.dispatch(
+    authApi.endpoints.loadUser.initiate({}, { forceRefetch: true })
+  );
+};
 initializeApp();

@@ -6,6 +6,7 @@ import { ApiResponse } from "../utils/apiResponse.js";
 import { Course } from "../models/course.model.js";
 const getCourseProgress = asyncHandler(async (req, res) => {
   const { courseId } = req.params;
+  console.log(courseId);
   const userId = req.user._id;
   if (!isValidObjectId(courseId)) {
     throw new ApiError(404, "Invalid course ID");
@@ -15,7 +16,7 @@ const getCourseProgress = asyncHandler(async (req, res) => {
     courseId,
     userId,
   }).populate("courseId");
-  const courseDetails = await CourseProgress.findById(courseId);
+  const courseDetails = await Course.findById(courseId).populate("lectures");
   if (!courseDetails) {
     throw new ApiError(404, "Course Not found");
   }
@@ -82,21 +83,26 @@ const updateLectureProgress = asyncHandler(async (req, res) => {
   );
 });
 
-export const markCourseAsCompleted = asyncHandler(async (req, res) => {
+const markCourseAsCompleted = asyncHandler(async (req, res) => {
   const { courseId } = req.params;
   const userId = req.user._id;
-  const courseProgress=await CourseProgress.find({courseId,userId});
-  courseProgress.lectureProgress.map((lecture)=>lecture.viewed=true);
+  const courseProgress = await CourseProgress.find({ courseId, userId });
+  courseProgress.lectureProgress.map((lecture) => (lecture.viewed = true));
   await courseProgress.save();
-  return res.json(new ApiError(200,{},"Course marked as completed"));
+  return res.json(new ApiError(200, {}, "Course marked as completed"));
 });
-export const markCourseAsInCompleted = asyncHandler(async (req, res) => {
+const markCourseAsInCompleted = asyncHandler(async (req, res) => {
   const { courseId } = req.params;
   const userId = req.user._id;
-  const courseProgress=await CourseProgress.find({courseId,userId});
-  courseProgress.lectureProgress.map((lecture)=>lecture.viewed=false);
+  const courseProgress = await CourseProgress.find({ courseId, userId });
+  courseProgress.lectureProgress.map((lecture) => (lecture.viewed = false));
   await courseProgress.save();
-  return res.json(new ApiError(200,{},"Course marked as incompleted"));
+  return res.json(new ApiError(200, {}, "Course marked as incompleted"));
 });
 
-export {markCourseAsCompleted,markCourseAsInCompleted,updateLectureProgress,getCourseProgress}
+export {
+  markCourseAsCompleted,
+  markCourseAsInCompleted,
+  updateLectureProgress,
+  getCourseProgress,
+};
