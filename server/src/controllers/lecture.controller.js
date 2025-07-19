@@ -42,7 +42,7 @@ const getCourseLectures = asyncHandler(async (req, res) => {
 });
 const updateLecture = asyncHandler(async (req, res) => {
   const videoLocalPath = req.file?.path;
-  const { lectureTitle, lectureFree } = req.body;
+  const { lectureTitle, lectureFree } = req?.body;
   const courseId = req.params.courseId;
   const lectureId = req.params.lectureId;
   if (!isValidObjectId(courseId) || !isValidObjectId(lectureId))

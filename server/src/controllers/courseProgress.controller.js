@@ -48,7 +48,7 @@ const updateLectureProgress = asyncHandler(async (req, res) => {
 
   if (!courseProgress) {
     //if no courseProgress found ,create a new record
-    courseProgress = await new CourseProgress.create({
+    courseProgress = new CourseProgress({
       userId,
       courseId,
       completed: false,
@@ -86,18 +86,20 @@ const updateLectureProgress = asyncHandler(async (req, res) => {
 const markCourseAsCompleted = asyncHandler(async (req, res) => {
   const { courseId } = req.params;
   const userId = req.user._id;
-  const courseProgress = await CourseProgress.find({ courseId, userId });
+  const courseProgress = await CourseProgress.findOne({ courseId, userId });
   courseProgress.lectureProgress.map((lecture) => (lecture.viewed = true));
+  courseProgress.completed = true;
   await courseProgress.save();
-  return res.json(new ApiError(200, {}, "Course marked as completed"));
+  return res.json(new ApiResponse(200, {}, "Course marked as completed"));
 });
 const markCourseAsInCompleted = asyncHandler(async (req, res) => {
   const { courseId } = req.params;
   const userId = req.user._id;
-  const courseProgress = await CourseProgress.find({ courseId, userId });
-  courseProgress.lectureProgress.map((lecture) => (lecture.viewed = false));
+  const courseProgress = await CourseProgress.findOne({ courseId, userId });
+  courseProgress?.lectureProgress?.map((lecture) => (lecture.viewed = false));
+  courseProgress.completed = false;
   await courseProgress.save();
-  return res.json(new ApiError(200, {}, "Course marked as incompleted"));
+  return res.json(new ApiResponse(200, {}, "Course are marked as incomplete"));
 });
 
 export {
