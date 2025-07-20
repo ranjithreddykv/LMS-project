@@ -22,6 +22,12 @@ export const lectureApi = createApi({
         method: "GET",
       }),
     }),
+    getLecture: builder.query({
+      query: ({ _id }) => ({
+        url: `/${_id}/lecture`,
+        method: "GET",
+      }),
+    }),
     updateLecture: builder.mutation({
       query: ({ courseId, lectureId, formData }) => ({
         url: `/${courseId}/updateLecture/${lectureId}`,
@@ -42,4 +48,5 @@ export const {
   useGetCourseLecturesQuery,
   useUpdateLectureMutation,
   useDeleteLectureMutation,
+  useGetLectureQuery
 } = lectureApi;

@@ -23,9 +23,10 @@ import {
 } from "@/features/api/courseApi";
 
 const EditCourse = () => {
-  const { _id } = useParams();
+  const params = useParams();
   const navigate = useNavigate();
-
+  const courseId = params._id;
+  console.log(courseId);
   const [courseTitle, setCourseTitle] = useState("");
   const [courseSubTitle, setCourseSubTitle] = useState("");
   const [courseDescription, setCourseDescription] = useState("");
@@ -34,16 +35,17 @@ const EditCourse = () => {
   const [coursePrice, setCoursePrice] = useState("");
   const [courseThumbnail, setCourseThumbnail] = useState("");
 
-  const { data: courseData } = useGetCourseQuery(_id);
+  const { data: courseData } = useGetCourseQuery({ courseId });
 
   useEffect(() => {
     if (courseData) {
+      console.log(courseData);
       setCourseTitle(courseData?.data.courseTitle || "");
       setCourseSubTitle(courseData?.data.subTitle || "");
-      setCourseDescription(courseData.description || "");
-      setCourseCategory(courseData.category || "");
-      setCourseLevel(courseData.courseLevel || "");
-      setCoursePrice(courseData.coursePrice || "");
+      setCourseDescription(courseData?.data?.description || "");
+      setCourseCategory(courseData?.data?.category || "");
+      setCourseLevel(courseData?.data?.courseLevel || "");
+      setCoursePrice(courseData?.data?.coursePrice || "");
       setCourseThumbnail(""); // reset thumbnail input
     }
   }, [courseData]);
@@ -107,15 +109,15 @@ const EditCourse = () => {
     formData.append("coursePrice", coursePrice);
     if (courseThumbnail) formData.append("courseThumbnail", courseThumbnail);
 
-    await updateCourse({ formData, _id });
+    await updateCourse({ formData, _id: courseId });
   };
 
   const publishCourseHandler = async () => {
-    await publishCourse({ _id });
+    await publishCourse({ _id: courseId });
   };
 
   const deleteCourseHandler = async () => {
-    await deleteCourse({ _id });
+    await deleteCourse({ _id: courseId });
   };
 
   const cancelHandler = () => {
@@ -266,6 +268,7 @@ const EditCourse = () => {
                   MERN Stack Development
                 </SelectItem>
                 <SelectItem value="Javascript">Javascript</SelectItem>
+                <SelectItem value="Java">Java</SelectItem>
                 <SelectItem value="Python">Python</SelectItem>
                 <SelectItem value="Docker">Docker</SelectItem>
                 <SelectItem value="HTML">HTML</SelectItem>

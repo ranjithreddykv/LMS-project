@@ -4,7 +4,10 @@ import { asyncHandler } from "../utils/ayncHandler.js";
 import { Course } from "../models/course.model.js";
 import { Lecture } from "../models/lecture.model.js";
 import { isValidObjectId } from "mongoose";
-import { deleteFromCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js";
+import {
+  deleteFromCloudinary,
+  uploadOnCloudinary,
+} from "../utils/cloudinary.js";
 import getCloduinaryPublicId from "../utils/getPublicId.js";
 
 const createLecture = asyncHandler(async (req, res) => {
@@ -71,7 +74,9 @@ const updateLecture = asyncHandler(async (req, res) => {
     { new: true, runValidators: true }
   );
   if (!lecture) throw new ApiError(404, "Lecture Not found");
-  return res.json(new ApiResponse(201, lecture, "Lecture Updated successfully"));
+  return res.json(
+    new ApiResponse(201, lecture, "Lecture Updated successfully")
+  );
 });
 const removeLecture = asyncHandler(async (req, res) => {
   const courseId = req.params.courseId;
@@ -83,18 +88,40 @@ const removeLecture = asyncHandler(async (req, res) => {
   course.lectures = course.lectures.filter(
     (lecture) => lecture._id != lectureId
   );
-  const publicId=lecture?.publicId;
+  const publicId = lecture?.publicId;
 
-  if(publicId){
-    try{
-    await deleteFromCloudinary(publicId);
-    console.log("Video of lecture deleted from cloudinary successfully");
-    }catch(error){
+  if (publicId) {
+    try {
+      await deleteFromCloudinary(publicId);
+      console.log("Video of lecture deleted from cloudinary successfully");
+    } catch (error) {
       console.log("Error occoured while deleting video from cloudinary");
-      throw new ApiError(500,"Error occoured while deleting video from cloudinary");
+      throw new ApiError(
+        500,
+        "Error occoured while deleting video from cloudinary"
+      );
     }
   }
   await course.save({ validateBeforeSave: false });
-  return res.json(new ApiResponse(200, course.lectures, "Lecture removed successfully"));
+  return res.json(
+    new ApiResponse(200, course.lectures, "Lecture removed successfully")
+  );
 });
-export { createLecture, getCourseLectures, updateLecture, removeLecture };
+const getLectureDetails = asyncHandler(async (req, res) => {
+  const lectureId = req.params._id;
+  console.log(lectureId);
+  if (!isValidObjectId(lectureId))
+    throw new ApiError(400, "Invalid lecture id");
+  const lectureDetails = await Lecture.findById(lectureId);
+  if (!lectureDetails) throw new ApiError(404, "Lecture not found");
+  return res.json(
+    new ApiResponse(200, lectureDetails, "lecture Detaisl fetched successfully")
+  );
+});
+export {
+  getLectureDetails,
+  createLecture,
+  getCourseLectures,
+  updateLecture,
+  removeLecture,
+};

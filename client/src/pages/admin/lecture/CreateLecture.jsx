@@ -102,13 +102,13 @@ const CreateLecture = () => {
           </Button>
         </div>
       </div>
-      <div className="mt-10">
+      <div className="mt-10 ml-10">
         {getCourseLecturesLoading ? (
           <p>Loading lectures....</p>
         ) : getCourseLecturesError ? (
           <>Error In Fetching lectures</>
         ) : lectures?.length === 0 ? (
-          "You haven't created any courses"
+          "You haven't created any lectures"
         ) : (
           lectures?.map((lecture, index) => (
             <Lecture

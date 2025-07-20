@@ -45,6 +45,7 @@ const CourseDetailsPage = () => {
     updatedAt,
     enrolledStudents = 0,
     description,
+    coursePrice,
     lectures = [],
   } = course;
 
@@ -132,7 +133,7 @@ const CourseDetailsPage = () => {
               Introduction to {courseTitle.split(" ")[0] || "Course"}
             </p>
             <p className="text-xl font-bold text-purple-600 dark:text-purple-500">
-              ₹239
+              ₹ {coursePrice}
             </p>
           </CardContent>
           <CardFooter className="w-full">

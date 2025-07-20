@@ -11,6 +11,8 @@ import { Input } from "@/components/ui/input";
 
 import {
   useDeleteLectureMutation,
+  useGetCourseLecturesQuery,
+  useGetLectureQuery,
   useUpdateLectureMutation,
 } from "@/features/api/lectureApi";
 import { Label } from "@radix-ui/react-dropdown-menu";
@@ -27,7 +29,9 @@ const LectureTab = () => {
   const params = useParams();
   const courseId = params.courseId;
   const lectureId = params.lectureId;
-  const purchased = false;
+
+  const {data:lectureData}=useGetLectureQuery({_id:lectureId});
+
   const videoHandler = (e) => {
     const video = e.target.files[0];
     setLectureVideo(video);
@@ -45,6 +49,8 @@ const LectureTab = () => {
       error: deleteLectureError,
     },
   ] = useDeleteLectureMutation();
+
+
 
   const lectureUpdateHandler = async () => {
     if (!lectureVideo) {
@@ -65,6 +71,14 @@ const LectureTab = () => {
   const lectureFreeHandler = () => {
     setLectureFree((prev) => !prev);
   };
+
+  useEffect(() => {
+    if (lectureData) {
+      setLectureFree(lectureData?.data?.isPreviewFree || false);
+      setLectureVideo(lectureData?.data?.videoUrl || null);
+      setLectureTitle(lectureData?.data?.lectureTitle || "");
+    }
+  }, [lectureData]);
 
   useEffect(() => {
     if (isSuccess) {
