@@ -7,12 +7,14 @@ import {
   updateCourse,
   getCourseDetails,
   getPublishedCourse,
+  searchCourse,
 } from "../controllers/course.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
 const router = Router();
 
 router.route("/").post(verifyJWT, createCourse);
+router.route("/search").get(verifyJWT,searchCourse); 
 router.route("/").get(verifyJWT, getAllCourse);
 router
   .route("/update/:_id")

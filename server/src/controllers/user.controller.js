@@ -138,11 +138,14 @@ const logout = asyncHandler(async (req, res) => {
 const getUserProfile = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   if (!isValidObjectId(userId)) throw new ApiError(403, "Invalid userID");
-  const user = await User.findById(userId).select("-password");
+  const user = await User.findById(userId)
+    .select("-password")
+    .populate("enrolledCourses");
+  console.log(user);
   if (!user) throw new ApiError(404, "User not found");
-  return res
-    .status(200)
-    .json(new ApiResponse(200, user, "user profile data fetched successfully"));
+  return res.json(
+    new ApiResponse(200, user, "user profile data fetched successfully")
+  );
 });
 
 const updateProfile = asyncHandler(async (req, res) => {
@@ -191,6 +194,17 @@ const updateProfile = asyncHandler(async (req, res) => {
     user,
   });
 });
+const upgradeToInstructor = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  if (!isValidObjectId(userId)) {
+    throw new ApiError(400, "Invalid user id");
+  }
+  const user = await User.findById(userId);
+  if (!user) throw new ApiError(404, "user not found");
+  user.role = "instructor";
+  user.save({ validateBeforeSave: false });
+  return res.json(201, {}, "role is upgraded to instructor");
+});
 
 export {
   register,
@@ -199,4 +213,5 @@ export {
   logout,
   getUserProfile,
   updateProfile,
+  upgradeToInstructor
 };

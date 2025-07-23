@@ -7,9 +7,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Moon, Sun } from "lucide-react";
+import { useTheme } from "@/components/ui/ThemeProvider";
+
 
 const DarkMode = () => {
-  const [theme, setTheme] = useState("light");
+  const theme='light'
+  const {setTheme} = useTheme();
 
   // Apply theme to HTML root
   React.useEffect(() => {

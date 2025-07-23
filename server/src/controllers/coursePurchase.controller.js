@@ -90,7 +90,7 @@ const stripeWebhook = asyncHandler(async (req, res) => {
       const purchase = await CoursePurchase.findOne({
         paymentId: session.id,
       }).populate("courseId");
-
+      console.log(purchase);
       if (!purchase) {
         console.error("Purchase not found for session ID:", session.id);
         return res.status(404).json({ message: "Purchase not found" });
@@ -141,6 +141,7 @@ const getCourseDetailWithPurchaseStatus = asyncHandler(async (req, res) => {
     .populate({ path: "lectures" });
   if (!course) throw new ApiError(404, "Course not found");
   const purchased = await CoursePurchase.findOne({ userId, courseId });
+  if(purchased.status==='pending' ||purchased.status==='failed') return res.json(new ApiResponse(200,{course,purchased:false}),"courses payment is not completed");
   return res.json(
     new ApiResponse(
       200,

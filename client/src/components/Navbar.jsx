@@ -78,9 +78,9 @@ const Navbar = () => {
                     Edit Profile
                   </Link>
                 </DropdownMenuItem>
-                {role === "instructor" && (
+                {role && (
                   <DropdownMenuItem>
-                    <Link to="/dashboard" className="w-full">
+                    <Link to="/admin/dashboard" className="w-full">
                       Dashboard
                     </Link>
                   </DropdownMenuItem>

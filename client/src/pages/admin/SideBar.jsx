@@ -3,7 +3,7 @@ import { Link, Outlet } from "react-router-dom";
 
 const SideBar = () => {
   return (
-    <div className="hidden sm:block w-[250px] sm:w-[300px] space-y-8 border-r border-gray-300 dark:border-gray-700 bg-[#f0f0f0] p-5 sticky top-16 h-[calc(100vh-4rem)] z-10">
+    <div className="hidden sm:block w-[250px] sm:w-[300px] space-y-8 border-r border-gray-300  dark:border-gray-900 p-5 sticky top-16 h-[calc(100vh-4rem)] z-10">
       <div>
         <div className="mt-16 space-y-3">
           <Link

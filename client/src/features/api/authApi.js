@@ -71,6 +71,12 @@ export const authApi = createApi({
         credentials: "include",
       }),
     }),
+    upgradeRole:builder.mutation({
+      query: ()=>({
+      url:"/upgrade-role",
+      method:"PATCH",
+      })
+    })
   }),
 });
 export const {
@@ -79,4 +85,5 @@ export const {
   useLoginUserMutation,
   useLogoutUserMutation,
   useUpdateUserMutation,
+  useUpgradeRoleMutation
 } = authApi;

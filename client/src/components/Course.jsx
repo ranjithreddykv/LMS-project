@@ -10,7 +10,7 @@ const Course = ({ course }) => {
   return (
     <Card
       className="mt-0 pt-0 overflow-hidden rounded-lg dark:bg-gray-800 bg-white shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
-      onClick={() => navigate(`course-details/${courseId}`)}
+      onClick={() => navigate(`/course-details/${courseId}`)}
     >
       <div className="relative">
         <img

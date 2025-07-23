@@ -103,10 +103,10 @@ const Login = () => {
   ]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-blue-100 to-purple-100 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr dark:from-gray-800 from-blue-100  to-purple-100 dark:to-gray-800  px-4">
       <Tabs
         defaultValue="signup"
-        className="w-full max-w-md bg-white shadow-xl rounded-2xl p-6"
+        className="w-full max-w-md bg-white dark:bg-gray-700 shadow-xl rounded-2xl p-6"
       >
         <TabsList className="grid w-full grid-cols-2 mb-6">
           <TabsTrigger value="signup">Sign Up</TabsTrigger>
@@ -187,7 +187,7 @@ const Login = () => {
               </CardContent>
               <CardFooter className="flex flex-col gap-2">
                 <Button
-                  className="w-full"
+                  className="w-full dark:bg-gray-800 dark:text-white"
                   disabled={registerIsLoading}
                   onClick={() => handleRegistration("signup")}
                 >
@@ -262,7 +262,7 @@ const Login = () => {
               </CardContent>
               <CardFooter className="flex flex-col gap-2">
                 <Button
-                  className="w-full"
+                  className="w-full dark:bg-gray-800 dark:text-white"
                   disabled={loginIsLoading}
                   onClick={() => handleRegistration("login")}
                 >

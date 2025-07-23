@@ -18,6 +18,13 @@ import CreateLecture from "./pages/admin/lecture/CreateLecture";
 import UpdateLecture from "./pages/admin/lecture/UpdateLecture";
 import CourseDetailsPage from "./pages/admin/course/CourseDetailsPage";
 import CourseProgress from "./pages/student/CourseProgress";
+import SearchPage from "./pages/student/SearchPage";
+import {
+  AdminRoute,
+  AuthenticatedUser,
+  ProtectedRoute,
+} from "./components/ui/ProtectedRoute";
+import PurchasedCourseProtectedRoute from "./components/ui/PurchasedCourseProtectedRoute";
 
 const appRouter = createBrowserRouter([
   {
@@ -35,27 +42,62 @@ const appRouter = createBrowserRouter([
       },
       {
         path: "login",
-        element: <Login />,
+        element: (
+          <AuthenticatedUser>
+            <Login />
+          </AuthenticatedUser>
+        ),
       },
       {
         path: "my-learning",
-        element: <MyLearning />,
+        element: (
+          <ProtectedRoute>
+            <MyLearning />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "my-profile",
-        element: <MyProfile />,
+        element: (
+          <ProtectedRoute>
+            <MyProfile />
+          </ProtectedRoute>
+        ),
       },
       {
+        path: "course/search",
+        element: (
+          <ProtectedRoute>
+            <SearchPage />
+          </ProtectedRoute>
+        ),
+      },
+
+      {
         path: "course-details/:courseId",
-        element: <CourseDetailsPage />,
+        element: (
+          <ProtectedRoute>
+            <CourseDetailsPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "course-progress/:courseId",
-        element: <CourseProgress />,
+        element: (
+          <ProtectedRoute>
+            <PurchasedCourseProtectedRoute>
+              <CourseProgress />
+            </PurchasedCourseProtectedRoute>
+          </ProtectedRoute>
+        ),
       },
       {
         path: "admin",
-        element: <AdminLayout />,
+        element: (
+          <AdminRoute>
+            <AdminLayout />
+          </AdminRoute>
+        ),
         children: [
           {
             path: "dashboard",

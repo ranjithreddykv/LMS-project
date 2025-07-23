@@ -1,36 +1,82 @@
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useGetAllPurchasedCoursesQuery } from "@/features/api/purchaseApi";
 import React from "react";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { DollarSign, Users, Book, LineChart } from "lucide-react";
-
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 const DashBoard = () => {
+  const { data, isSuccess, isError, isLoading } =
+    useGetAllPurchasedCoursesQuery();
+  if (isLoading) return <h1>Loading...</h1>;
+  if (isError)
+    return (
+      <h1 className="text-red-500">Failed to get purchased course data</h1>
+    );
+  const purchasedCourse = data?.data || [];
+  const courseData = purchasedCourse?.map((course) => ({
+    name: course.courseId.courseTitle,
+    price: course.courseId.coursePrice,
+  }));
+  const totalRevenue = purchasedCourse.reduce(
+    (acc, element) => acc + (element.amount || 0),0
+  );
+  const totalSales=purchasedCourse.length;
+ 
   return (
-    <div className="mt-10 p-6 space-y-6">
-      {/* Overview Cards */}
-      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Sales</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">3</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">₹40000</div>
-          </CardContent>
-        </Card>
-      </div>
+    <div className="mt-15 grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+      <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <CardHeader>
+          <CardTitle>Total Sales</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-3xxl font-bold text-blue-600">{totalSales}</p>
+        </CardContent>
+      </Card>
+      <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <CardHeader>
+          <CardTitle>Total Revenue</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-3xxl font-bold text-blue-600">{totalRevenue}</p>
+        </CardContent>
+      </Card>
+      {/* Course Prices Card */}
+      <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4">
+        <CardHeader>
+          <CardTitle className="text-xl font-semibold text-gray-700">
+            Course Prices
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={250}>
+            <LineChart data={courseData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+              <XAxis
+                dataKey="name"
+                stroke="#6b7280"
+                angle={-30} // Rotated labels for better visibility
+                textAnchor="end"
+                interval={0} // Display all labels
+              />
+              <YAxis stroke="#6b7280" />
+              <Tooltip formatter={(value, name) => [`₹${value}`, name]} />
+              <Line
+                type="monotone"
+                dataKey="price"
+                stroke="#4a90e2" // Changed color to a different shade of blue
+                strokeWidth={3}
+                dot={{ stroke: "#4a90e2", strokeWidth: 2 }} // Same color for the dot
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
     </div>
   );
 };

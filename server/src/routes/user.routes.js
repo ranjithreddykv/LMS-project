@@ -6,6 +6,7 @@ import {
   logout,
   getUserProfile,
   updateProfile,
+  upgradeToInstructor,
 } from "../controllers/user.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
@@ -19,4 +20,5 @@ router.route("/profile").get(verifyJWT, getUserProfile);
 router
   .route("/profile/update")
   .put(verifyJWT, upload.single("profilePhoto"), updateProfile);
-export default router;
+router.route("/upgrade-role").patch(verifyJWT,upgradeToInstructor);
+  export default router;

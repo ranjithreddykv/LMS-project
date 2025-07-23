@@ -19,10 +19,13 @@ import Course from "@/components/Course";
 import {
   useLoadUserQuery,
   useUpdateUserMutation,
+  useUpgradeRoleMutation,
 } from "@/features/api/authApi";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 const MyProfile = () => {
+  const navigate=useNavigate();
   const [name, setName] = useState("");
   const [profilePhoto, setProfilePhoto] = useState("");
   const { data, isLoading, refetch } = useLoadUserQuery();
@@ -37,6 +40,14 @@ const MyProfile = () => {
       isSuccess,
     },
   ] = useUpdateUserMutation();
+  const [
+    upgradeRole,
+    {
+      isLoading: roleChangeIsLoading,
+      isSuccess: roleChangeSuccess,
+      isError: roleChangeError,
+    },
+  ] = useUpgradeRoleMutation();
   useEffect(() => {
     if (isSuccess) {
       toast.success(updatedUserData.message || "Profile updated.");
@@ -51,7 +62,6 @@ const MyProfile = () => {
   const onChangeHandler = (e) => {
     const file = e.target.files?.[0];
     if (file) setProfilePhoto(file);
-   
   };
   const updatedUserHandler = async () => {
     console.log(name, profilePhoto);
@@ -60,102 +70,130 @@ const MyProfile = () => {
     formData.append("profilePhoto", profilePhoto);
     await updateUser(formData);
   };
+  const roleChangeHandler = async () => {
+    await upgradeRole();
+    if (isSuccess) {
+      toast.success("You are upgraded to instructor successfully");
+       navigate("/admin");
+    } else if (isError)
+      toast.error("Error occoured which upgrading to instructor");
+  };
   return (
-    <div className="max-w-4xl mx-auto px-4 my-24">
-      <h1 className="font-bold text-2xl text-center md:text-left">PROFILE</h1>
-      <div className="flex flex-col md:flex-row items-center md:items-start gap-3 my-5">
-        <div>
-          <Avatar className="h-24 w-24 md:h-32 md:w-32 mb-4">
-            <AvatarImage
-              className="h-24 w-24 md:h-32 md:w-32 rounded-full "
-              src={data?.data?.photoUrl || "https://github.com/shadcn.png"}
-            />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
-        </div>
-        <div>
+    <div className="max-w-7xl mx-auto px-4 my-24">
+      <div className="flex flex-row ">
+        <h1 className="font-bold text-2xl text-center md:text-left">PROFILE</h1>
+        <div className="flex flex-col md:flex-row items-center md:items-start gap-3 my-5">
           <div>
-            <h1 className="font-semibold text-gray-900 dark:text-gray-100">
-              Name:
-              <span className="font-normal text-gray-700 dark:text-gray-300 ml-2">
-                {data?.data?.name}
-              </span>
-            </h1>
+            <Avatar className="h-24 w-24 md:h-32 md:w-32 mb-4">
+              <AvatarImage
+                className="h-24 w-24 md:h-32 md:w-32 rounded-full "
+                src={data?.data?.photoUrl || "https://github.com/shadcn.png"}
+              />
+              <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
           </div>
           <div>
-            <h1 className="font-semibold text-gray-900 dark:text-gray-100">
-              Email:
-              <span className="font-normal text-gray-700 dark:text-gray-300 ml-2">
-                {data?.data?.email}
-              </span>
-            </h1>
-          </div>
-          <div>
-            <h1 className="font-semibold text-gray-900 dark:text-gray-100">
-              Role:
-              <span className="font-normal text-gray-700 dark:text-gray-300 ml-2">
-                {data?.data?.role.toUpperCase()}
-              </span>
-            </h1>
-          </div>
-          <Dialog variant="secondary">
-            <form>
-              <DialogTrigger asChild>
-                <Button size="sm" className="mt-2">
-                  Edit Profile
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                  <DialogTitle>Edit profile</DialogTitle>
-                  <DialogDescription>
-                    Make changes to your profile here. Click save when you're
-                    done.
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid grid-cols-cols-4 items-center gap-4">
-                    <Label htmlFor="name-1">Name</Label>
-                    <Input
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      type="text"
-                      placeholder="Name"
-                      className="col-span-3"
-                    />
-                  </div>
-                  <div className="grid grid-cols-cols-4 items-center gap-4">
-                    <Label>Profile picture</Label>
-                    <input
-                      onChange={onChangeHandler}
-                      accept="image/"
-                      type="file"
-                      className="col-span-3"
-                    />
-                  </div>
-                </div>
-                <DialogFooter>
-                  <DialogClose asChild>
-                    <Button variant="outline">Cancel</Button>
-                  </DialogClose>
-                  <Button
-                    disabled={updatedUserLoading}
-                    type="submit"
-                    onClick={updatedUserHandler}
-                  >
-                    {updatedUserLoading ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Please wait
-                      </>
-                    ) : (
-                      <>Save changes</>
-                    )}
+            <div>
+              <h1 className="font-semibold text-gray-900 dark:text-gray-100">
+                Name:
+                <span className="font-normal text-gray-700 dark:text-gray-300 ml-2">
+                  {data?.data?.name}
+                </span>
+              </h1>
+            </div>
+            <div>
+              <h1 className="font-semibold text-gray-900 dark:text-gray-100">
+                Email:
+                <span className="font-normal text-gray-700 dark:text-gray-300 ml-2">
+                  {data?.data?.email}
+                </span>
+              </h1>
+            </div>
+            <div>
+              <h1 className="font-semibold text-gray-900 dark:text-gray-100">
+                Role:
+                <span className="font-normal text-gray-700 dark:text-gray-300 ml-2">
+                  {data?.data?.role.toUpperCase()}
+                </span>
+              </h1>
+            </div>
+            <Dialog variant="secondary">
+              <form>
+                <DialogTrigger asChild>
+                  <Button size="sm" className="mt-2">
+                    Edit Profile
                   </Button>
-                </DialogFooter>
-              </DialogContent>
-            </form>
-          </Dialog>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Edit profile</DialogTitle>
+                    <DialogDescription>
+                      Make changes to your profile here. Click save when you're
+                      done.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-cols-4 items-center gap-4">
+                      <Label htmlFor="name-1">Name</Label>
+                      <Input
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        type="text"
+                        placeholder="Name"
+                        className="col-span-3"
+                      />
+                    </div>
+                    <div className="grid grid-cols-cols-4 items-center gap-4">
+                      <Label>Profile picture</Label>
+                      <input
+                        onChange={onChangeHandler}
+                        accept="image/"
+                        type="file"
+                        className="col-span-3"
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button variant="outline">Cancel</Button>
+                    </DialogClose>
+                    <Button
+                      disabled={updatedUserLoading}
+                      type="submit"
+                      onClick={updatedUserHandler}
+                    >
+                      {updatedUserLoading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Please wait
+                        </>
+                      ) : (
+                        <>Save changes</>
+                      )}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </form>
+            </Dialog>
+          </div>
+        </div>
+        <div className="p-6 max-w-md mx-auto bg-white dark:bg-gray-700 rounded-xl shadow-md space-y-4">
+          <h2 className="text-xl font-semibold">
+            Want to become an instructor?
+          </h2>
+          <p className="text-gray-600">
+            As an instructor, you can upload courses, manage content, and view
+            analytics.
+          </p>
+          {data?.data?.role === "student" ? (
+            <Button onClick={roleChangeHandler} disabled={roleChangeIsLoading}>
+              {roleChangeIsLoading ? "Processing..." : "Become Instructor"}
+            </Button>
+          ) : (
+            <div className="text-green-600 font-medium">
+              You are now an instructor!
+            </div>
+          )}
         </div>
       </div>
       <div>
@@ -170,7 +208,9 @@ const MyProfile = () => {
               <CourseSkeleton key={ind} />
             ))
           ) : (
-            Array.from({ length: 4 }).map((_, ind) => <Course key={ind} />)
+            data?.data?.enrolledCourses.map((course, ind) => (
+              <Course key={ind} course={course} />
+            ))
           )}
         </div>
       </div>

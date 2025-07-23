@@ -134,7 +134,34 @@ const getPublishedCourse = asyncHandler(async (req, res) => {
     )
   );
 });
+
+const searchCourse = asyncHandler(async (req, res) => {
+  const { query = "", categories = [], sortByPrice = "" } = req.query;
+  //create search query
+  const searchCriteria = {
+    isPublished: true,
+    $or: [
+      { courseTitle: { $regex: query, $options: "i" } },
+      { subTitle: { $regex: query, $options: "i" } },
+      { category: { $regex: query, $options: "i" } },
+    ],
+  };
+  if (categories.length > 0) {
+    searchCriteria.category = { $in: categories };
+  }
+  //define sorting order
+  const sortOptions = {};
+  if (sortByPrice === "low") {
+    sortOptions.coursePrice = 1; //sort by price by ascending order
+  } else if (sortByPrice === "high") {
+    sortOptions.coursePrice = -1; //sort by descending order
+  }
+  let courses = await Course.find(searchCriteria).populate({path:"creator" , select:"name photoUrl"}).sort(sortOptions);
+
+  return res.json(new ApiResponse(200,{courses:courses||[]},"courses searched successfully"))
+});
 export {
+  searchCourse,
   getPublishedCourse,
   createCourse,
   getAllCourse,
